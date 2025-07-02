@@ -1,4 +1,4 @@
-# Tutorial: Crear Sully - De Grace a auto-replicación
+# Crear Sully - De Grace a auto-replicación
 
 ## Introducción
 

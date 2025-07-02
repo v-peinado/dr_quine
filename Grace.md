@@ -1,4 +1,4 @@
-# Tutorial: Crear Grace - De Quine básico a macros
+# Crear Grace - De Quine básico a macros
 
 ## Introducción
 

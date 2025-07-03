@@ -15,16 +15,27 @@ Un **quine** es un programa informático que produce como salida una copia exact
 
 El **Teorema de Recursión de Kleene** (también conocido como Teorema del Punto Fijo) establece que:
 
-> *Para cualquier función computable f, existe un programa P tal que P y f(P) calculan la misma función.*
+> *Para cualquier función computable total f, existe un programa P tal que P y f(P) calculan la misma función.*
 
-### Relación con los Quines
 
-Los quines son una demostración práctica de este teorema:
-- **P** = nuestro programa quine
-- **f(P)** = la función que ejecuta P y obtiene su salida
-- **Punto fijo**: P produce P cuando se ejecuta
+En términos simples, el teorema dice que si tienes una función f que transforma programas:
 
-En esencia, un quine encuentra el "punto fijo" donde el programa y su salida son idénticos.
+```
+Para cualquier función f que transforme programas,
+existe un programa P tal que:
+P y f(P) hacen exactamente lo mismo
+```
+
+**Ejemplo concreto con quines:**
+- f = "ejecutar el programa y obtener su salida"
+- El teorema dice: existe un programa P tal que P = f(P)
+- Es decir, existe un programa cuya salida es él mismo (¡un quine!)
+
+Un quine es un punto fijo de la función "ejecutar e imprimir salida":
+- Sea f la función que toma un programa P y devuelve su salida
+- Un quine Q satisface: f(Q) = Q
+- El programa y su salida son idénticos
+
 
 ## El Proyecto Dr_Quine
 
@@ -34,18 +45,21 @@ Este proyecto implementa tres quines diferentes, cada uno con características �
 - Imprime su código fuente en stdout
 - Demuestra la técnica básica usando `printf` y format specifiers
 - Incluye funciones y comentarios según requisitos
+- [📖 Documentación detallada](docs/README_Colleen.md)
 
 ### 2. **Grace** - El Quine sin main
 - Escribe su código en un archivo `Grace_kid.c`
 - Se ejecuta mediante macros (sin función main declarada)
 - Demuestra el uso creativo del preprocesador
+- [📖 Documentación detallada](docs/README_Grace.md)
 
 ### 3. **Sully** - El Quine Autorreplicante
 - Se replica a sí mismo con un contador decreciente
 - Compila y ejecuta cada réplica automáticamente
 - Demuestra autorreplicación con modificación
+- [📖 Documentación detallada](docs/README_Sully.md)
 
-## El Desafío Principal: El Problema del Escape
+## Autoreferencia
 
 El mayor desafío al crear un quine es manejar la **autorreferencia sin recursión infinita**. Cuando intentamos que un programa imprima su propio código, nos encontramos con el problema del escape:
 
@@ -55,29 +69,61 @@ char *s = "char *s = ";
 // ¿Cómo imprimimos las comillas dentro de s?
 ```
 
-### La Solución: Format Specifiers
+### Por Qué Printf Resuelve el Problema de la Autoreferencia
 
-La solución elegante usa `printf` con especificadores de formato:
+Printf resuelve el problema de la autoreferencia mediante **sustitución diferida**:
+
+#### 1. **Separación entre representación y contenido**
 
 ```c
-char *s = "char *s = %c%s%c;";
-printf(s, 34, s, 34);  // 34 = ASCII de "
+char *s = "char *s = %c%s%c; printf(s, 34, s, 34);";
 ```
 
-Esto permite que la cadena contenga su propia definición con "huecos" que se rellenan dinámicamente.
+- La cadena `s` no contiene su propia definición literal completa
+- Contiene un marcador `%s` que significa "aquí irá una cadena"
+- El contenido real se proporciona como argumento durante la ejecución
 
-## Estructura del Proyecto
+#### 2. **El momento clave: la sustitución**
 
+Cuando ejecutas:
+```c
+printf(s, 34, s, 34);
 ```
-Dr_Quine/
-├── README.md          # Este archivo
-└── C/                 # Implementaciones en C
-    ├── Makefile      # Compila los tres programas
-    ├── Colleen.c     # Quine clásico
-    ├── Grace.c       # Quine con macros
-    └── Sully.c       # Quine autorreplicante
 
+Printf hace esto:
+1. Lee la cadena `s`: `"char *s = %c%s%c; printf(s, 34, s, 34);"`
+2. Encuentra `%c` → sustituye por 34 → imprime `"`
+3. Encuentra `%s` → sustituye por el contenido de `s` → imprime toda la cadena
+4. Encuentra `%c` → sustituye por 34 → imprime `"`
+
+#### 3. **No hay recursión, solo sustitución**
+
+El punto crítico es que printf **no ejecuta código recursivamente**. Solo:
+- Toma una cadena con marcadores
+- Sustituye los marcadores por valores
+- Imprime el resultado
+
+#### 4. **La autoreferencia es indirecta**
+
+```c
+char *s = "algo %s algo";
+printf(s, s);  // s se pasa como argumento a sí misma
 ```
+
+- `s` no necesita contener literalmente todo su contenido
+- Solo necesita un marcador `%s` donde irá su contenido
+- En tiempo de ejecución, printf inserta el contenido de `s` en ese punto
+
+### La Diferencia Fundamental
+
+**Sin printf**: Necesitas escribir el código que escribe el código que escribe el código... (infinito)
+
+**Con printf**: Tienes una cadena con un "hueco" (`%s`) y le dices a printf "pon esta misma cadena en el hueco"
+
+La magia está en que **el hueco es parte de la cadena**, entonces cuando printf pone la cadena en el hueco, está recreando la definición completa, incluyendo el hueco mismo.
+
+Esto es lo que rompe el ciclo infinito: la cadena puede describirse a sí misma usando un marcador de posición en lugar de contenerse literalmente.
+
 
 ## Compilación y Uso
 
@@ -91,7 +137,7 @@ make                  # Compila todos los programas
 ./Sully && ls -la Sully_*
 ```
 
-## Puntos Clave
+## Aprendizajes Clave
 
 1. **Autorreferencia sin recursión**: Usar datos para representar código
 2. **Escape de caracteres**: Manejar comillas y caracteres especiales con ASCII

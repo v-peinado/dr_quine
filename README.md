@@ -2,7 +2,7 @@
 
 ## ¿Qué es un Quine?
 
-Un **quine** es un programa informático que produce como salida una copia exacta de su propio código fuente, sin leer ningún archivo ni recibir entrada externa. Es un ejercicio fascinante de autorreferencia en programación que demuestra conceptos fundamentales de la teoría de la computación.
+Un **quine** es un programa informático que produce como salida una copia exacta de su propio código fuente, sin leer ningún archivo ni recibir entrada externa. Es un ejercicio de autorreferencia en programación que demuestra conceptos fundamentales de la teoría de la computación.
 
 ### Características de un Quine válido:
 - ✅ Produce su propio código fuente como salida

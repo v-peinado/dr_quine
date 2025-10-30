@@ -71,7 +71,19 @@ char *s = "char *s = ";
 
 ### Por Qué Printf Resuelve el Problema de la Autoreferencia
 
-Printf resuelve el problema de la autoreferencia mediante **sustitución diferida**:
+La función printf en C permite crear quines porque separa la plantilla del contenido:  
+procesa una cadena de formato con especificadores (%s, %c, %d) y los sustituye por los argumentos proporcionados en una sola pasada, sin reinterpretar el resultado.  
+Esto permite que una cadena se referencie a sí misma sin causar recursión infinita. El truco está en que la cadena contiene tanto su propia definición como las instrucciones para imprimirse:  
+char *s = "char *s = %c%s%c; printf(s, 34, s, 34);";  
+printf(s, 34, s, 34);.  
+Cuando printf encuentra %s lo sustituye por la cadena completa, pero no vuelve a procesar los especificadores que aparecen en el contenido sustituido.  
+
+Otros lenguajes ofrecen mecanismos similares mediante formateo de strings (funciones como format(), sprintf() que sustituyen marcadores en una plantilla:  
+Python's "Hola %s" % nombre, Java's String.format()) o interpolación (inserción directa de expresiones dentro de strings que se evalúan al momento de ejecución:  
+JavaScript's `Hola ${nombre}`, Ruby's "Hola #{nombre}").  
+Ambos métodos comparten la característica clave: permiten que una cadena contenga referencias a variables que se sustituyen en tiempo de ejecución,  
+incluyendo la posibilidad de que la cadena se referencie a sí misma. La diferencia principal es que el formateo usa funciones explícitas con marcadores,  
+mientras que la interpolación embebe directamente las expresiones en la sintaxis del string.
 
 #### 1. **Separación entre representación y contenido**
 
@@ -114,17 +126,6 @@ printf(s, s);  // s se pasa como argumento a sí misma
 - Solo necesita un marcador `%s` donde irá su contenido
 - En tiempo de ejecución, printf inserta el contenido de `s` en ese punto
 
-### La Diferencia Fundamental
-
-**Sin printf**: Necesitas escribir el código que escribe el código que escribe el código... (infinito)
-
-**Con printf**: Tienes una cadena con un "hueco" (`%s`) y le dices a printf "pon esta misma cadena en el hueco"
-
-La magia está en que **el hueco es parte de la cadena**, entonces cuando printf pone la cadena en el hueco, está recreando la definición completa, incluyendo el hueco mismo.
-
-Esto es lo que rompe el ciclo infinito: la cadena puede describirse a sí misma usando un marcador de posición en lugar de contenerse literalmente.
-
-
 ## Compilación y Uso
 
 ```bash
@@ -136,13 +137,3 @@ make                  # Compila todos los programas
 ./Grace && diff Grace.c Grace_kid.c
 ./Sully && ls -la Sully_*
 ```
-
-## Aprendizajes Clave
-
-1. **Autorreferencia sin recursión**: Usar datos para representar código
-2. **Escape de caracteres**: Manejar comillas y caracteres especiales con ASCII
-3. **Format specifiers posicionales**: `%1$c` permite reutilizar argumentos
-4. **Macros del preprocesador**: Ejecutar código sin main declarado
-5. **Metaprogramación**: Programas que generan y ejecutan otros programas
-
-Este proyecto es una introducción perfecta a conceptos avanzados como puntos fijos, autorreplicación y las bases teóricas de los virus informáticos y programas automodificables.

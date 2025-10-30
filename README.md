@@ -13,30 +13,11 @@ Un **quine** es un programa informático que produce como salida una copia exact
 
 ## El Teorema de Recursión de Kleene
 
-El **Teorema de Recursión de Kleene** (también conocido como Teorema del Punto Fijo) establece que:
-
-> *Para cualquier función computable total f, existe un programa P tal que P y f(P) calculan la misma función.*
-
-
-En términos simples, el teorema dice que si tienes una función f que transforma programas:
-
-```
-Para cualquier función f que transforme programas,
-existe un programa P tal que:
-P y f(P) hacen exactamente lo mismo
-```
-
-**Ejemplo concreto con quines:**
-- f = "ejecutar el programa y obtener su salida"
-- El teorema dice: existe un programa P tal que P = f(P)
-- Es decir, existe un programa cuya salida es él mismo (¡un quine!)
-
-Un quine es un punto fijo de la función "ejecutar e imprimir salida":
-- Sea f la función que toma un programa P y devuelve su salida
-- Un quine Q satisface: f(Q) = Q
-- El programa y su salida son idénticos
-
-
+El teorema de recursión garantiza que existe un programa P que puede acceder a su propio código y procesarlo.  
+Un quine es el caso más simple: P produce P - el programa se imprime a sí mismo.  
+El teorema dice "existe un programa que puede obtener su propia descripción", y un quine lo demuestra: obtiene su descripción (almacenada internamente como string)  
+y la imprime, produciendo exactamente su propio código fuente. Es la prueba directa de que la auto-referencia computacional es posible.  
+  
 ## El Proyecto Dr_Quine
 
 Este proyecto implementa tres quines diferentes, cada uno con características únicas:
